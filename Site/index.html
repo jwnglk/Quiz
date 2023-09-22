@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+    <title>Quiz</title>
+  <style>
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Oswald, Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: rgb(129, 91, 155);
+}
+
+.app {
+    background-color: antiquewhite;
+    width: 90%;
+    max-width: 600px;
+    margin: 100px auto 0;
+    border-radius: 10px;
+    padding: 30px;
+}
+
+.app h1 {
+    font-size: 30px;
+    color: #501b81;
+    border-bottom: 1px solid #501b81;
+    padding-bottom: 15px;
+}
+
+.quiz {
+    padding: 10px 0;
+}
+
+.quiz h2 {
+    font-size: 25px;
+    color: #82669c;
+    font-weight: 500;
+}
+
+.btn {
+    background-color: antiquewhite;
+    color: #501b81;
+    font-size: 18px;
+    font-weight: 500;
+    width: 100%;
+    border: 1px solid #501b81;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: left;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+.btn:hover:not([disabled]) {
+    color: antiquewhite;
+    background-color: #501b81;
+}
+
+.btn:disabled{
+    cursor: no-drop;
+}
+
+#next {
+    background-color: #501b81;
+    color: antiquewhite;
+    font-size: 20px;
+    font-weight: 400;
+    width: 150px;
+    border: 0;
+    padding: 10px;
+    margin: 15px auto 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.correct {
+    background-color: rgba(0, 128, 0, 0.281);
+}
+
+.incorrect {
+    background-color: rgba(255, 0, 0, 0.315);
+}
+  </style>
+</head>
+<body>
+    <div class="app">
+        <h1>Simple Quiz</h1>
+          <div class="quiz">
+                <h2 id="question">Question</h2>
+                <div id="answer-buttons">
+                    <button class="btn">answer 1</button>
+                    <button class="btn">answer 2</button>
+                    <button class="btn">answer 3</button>
+                    <button class="btn">answer 4</button>
+                </div>
+                <button id="next">NEXT</button>
+          </div>
+    </div>
+<script>const questions = [
+    {
+        question: "The largest animal in the world is...",
+        answer: [
+            {text: "elephant", correct: false},
+            {text: "whale", correct: true},
+            {text: "mom", correct: false},
+            {text: "Shark", correct: false},
+        ]
+    }, {
+        question: "The fastest animal in the world is...",
+        answer: [
+            {text: "tigers", correct: false},
+            {text: "dogs", correct: false},
+            {text: "humans", correct: false},
+            {text: "cheetahs", correct: true},
+        ]
+    }
+];
+
+const questionElement = document.getElementById("question");
+const answerButton = document.getElementById("answer-buttons");
+const nextButton = document.getElementById("next");
+
+let currentQuestionIndex = 0;
+let Score = 0;
+
+function startQuiz(){ 
+currentQuestionIndex = 0;
+Score = 0;
+nextButton.innerHTML = "Next";
+showQuestion();
+}
+function showQuestion(){
+resetState();
+let currentQuestion = questions[currentQuestionIndex];
+let questionNo = currentQuestionIndex + 1;
+questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+
+currentQuestion.answer.forEach(answer => {
+    const button = document.createElement("button");
+    button.innerHTML = answer.text;
+    button.classList.add("btn");
+    answerButton.appendChild(button);
+    if (answer.correct){
+        button.dataset.correct = answer.correct;
+    }
+    button.addEventListener("click", selectAnswer);
+});
+}
+
+function resetState(){
+nextButton.style.display = "none";
+while(answerButton.firstChild){
+    answerButton.removeChild(answerButton.firstChild);
+}
+}
+
+function selectAnswer(e){
+const selectedBtn = e.target;
+const isCorrect = selectedBtn.dataset.correct==="true";
+if (isCorrect) {
+    selectedBtn.classList.add("correct");
+    Score++;
+}else {
+    selectedBtn.classList.add("incorrect");
+}
+Array.from(answerButton.children).forEach(button => {
+    if(button.dataset.correct==="true"){
+        button.classList.add("correct");
+    } 
+    button.disabled = true;
+});
+nextButton.style.display="block";
+}
+
+function showScore(){
+resetState();
+questionElement.innerHTML = `You scored ${Score} out of ${questions.length}`;
+nextButton.innerHTML = "Play again";
+nextButton.style.display = 'block';
+}
+
+function handleNextButton(){
+currentQuestionIndex++;
+if (currentQuestionIndex < questions.length) {
+    showQuestion();
+}else {
+    showScore();
+}
+}
+
+nextButton.addEventListener("click", ()=>{
+if (currentQuestionIndex < questions.length) {
+    handleNextButton();
+} else {
+    startQuiz();
+}
+});
+
+startQuiz();
+</script>
+</body>
+</html>
